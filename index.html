@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stephen Canino – Astrophysics & Cosmology Simulations</title>
+<meta name="description" content="Research, publications, and visualizations.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --void:      #000000;   /* page background */
+    --deep:      #0a0d1c;   /* raised surfaces */
+    --dust:      #151a33;   /* borders, quiet fills */
+    --starlight: #e9e7f1;   /* primary text */
+    --haze:      #9a9db8;   /* secondary text */
+    --nebula:    #8f86ff;   /* links, active state */
+    --accent:    #863cc2;   /* name, active tab, year headings */
+    --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+    --sans:  "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--starlight);
+    font: 400 1.0625rem/1.65 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* optional full-page photo behind everything (set in SITE.background) */
+  #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: center / cover no-repeat; display: none; }
+  #bg.on { display: block; }
+  #bg::after { content: ""; position: absolute; inset: 0; background: var(--void); opacity: var(--dim, .45); }
+
+  a { color: var(--nebula); text-decoration-thickness: 1px; text-underline-offset: .2em; }
+  a:hover { color: #b9b4ff; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+
+  .wrap { position: relative; z-index: 1; max-width: 66rem; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- header + tabs ---------- */
+  header.site { padding: 1rem 0 0; }
+
+  nav[role="tablist"] { display: flex; gap: .25rem; border-bottom: 1px solid var(--dust); overflow-x: auto; scrollbar-width: none; }
+  nav[role="tablist"]::-webkit-scrollbar { display: none; }
+  .tab {
+    appearance: none; background: none; border: 0; cursor: pointer; white-space: nowrap;
+    font: 500 .98rem var(--sans); color: var(--haze);
+    padding: .75rem 1rem; position: relative; transition: color .2s;
+  }
+  .tab:hover { color: var(--starlight); }
+  .tab[aria-selected="true"] { color: var(--starlight); }
+  .tab[aria-selected="true"]::after {
+    content: ""; position: absolute; left: 1rem; right: 1rem; bottom: -1px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+
+  main { padding: 3.5rem 0 5rem; }
+  section[role="tabpanel"][hidden] { display: none; }
+
+  /* ---------- about ---------- */
+  .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 3rem; align-items: center; }
+  .hero h1 {
+    font: 400 clamp(3rem, 7.5vw, 5.75rem)/.98 var(--serif);
+    letter-spacing: -.015em; margin: 0 0 1.5rem; color: var(--starlight);
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .lede { font-size: 1.2rem; color: var(--starlight); max-width: 34rem; margin: 0 0 1.25rem; }
+  .prose p { max-width: 38rem; color: var(--haze); margin: 0 0 1rem; }
+  .prose p strong { color: var(--starlight); font-weight: 500; }
+
+  .orrery { width: 100%; aspect-ratio: 1; max-width: 26rem; justify-self: center; }
+  .orrery canvas { width: 100%; height: 100%; display: block; }
+  .orrery.has-media { aspect-ratio: auto; max-width: 30rem; }
+  .orrery.has-media img, .orrery.has-media video { width: 100%; height: auto; display: block; border-radius: 6px; border: 1px solid var(--dust); }
+
+  .links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.75rem; }
+  .pill {
+    display: inline-block; padding: .45rem .95rem; border: 1px solid var(--dust); border-radius: 999px;
+    color: var(--starlight); text-decoration: none; font-size: .95rem; background: rgba(10,13,28,.6);
+    transition: border-color .2s, color .2s;
+  }
+  .pill:hover { border-color: var(--nebula); color: #fff; }
+
+  .news { margin-top: 3.5rem; max-width: 40rem; }
+  .news h2 { font: 400 1.6rem var(--serif); margin: 0 0 1rem; }
+  .news dl { margin: 0; display: grid; grid-template-columns: 6.5rem 1fr; gap: .6rem 1rem; }
+  .news dt { color: var(--haze); font-size: .95rem; }
+  .news dd { margin: 0; }
+
+  /* ---------- shared section head ---------- */
+  .panel-head { max-width: 40rem; margin-bottom: 2.5rem; }
+  .panel-head h2 { font: 400 clamp(2.2rem, 5vw, 3.2rem)/1.05 var(--serif); margin: 0 0 .75rem; letter-spacing: -.01em; }
+  .panel-head p { margin: 0; color: var(--haze); }
+
+  /* ---------- publications ---------- */
+  .year { font: 400 1.9rem var(--serif); color: var(--accent); margin: 2.5rem 0 .25rem; }
+  .year:first-of-type { margin-top: 0; }
+  .pub { padding: 1.5rem 0; border-top: 1px solid var(--dust); display: grid; grid-template-columns: 1fr; gap: .4rem; max-width: 46rem; }
+  .pub h3 { font: 400 1.45rem/1.25 var(--serif); margin: 0; }
+  .pub h3 a { color: var(--starlight); text-decoration: none; }
+  .pub h3 a:hover { color: var(--nebula); }
+  .authors { color: var(--haze); font-size: .98rem; }
+  .authors b { color: var(--starlight); font-weight: 500; }
+  .venue { color: var(--haze); font-size: .95rem; font-style: italic; }
+  .blurb { margin: .35rem 0 0; color: #c4c3d6; font-size: 1rem; max-width: 40rem; }
+  .pub-links { display: flex; flex-wrap: wrap; gap: .5rem 1.1rem; margin-top: .5rem; font-size: .95rem; }
+
+  /* ---------- visualizations ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: .5rem; margin: -1rem 0 2rem; }
+  .chip {
+    appearance: none; cursor: pointer; font: 500 .9rem var(--sans); color: var(--haze);
+    background: transparent; border: 1px solid var(--dust); border-radius: 999px; padding: .3rem .85rem;
+    transition: color .2s, border-color .2s, background .2s;
+  }
+  .chip:hover { color: var(--starlight); border-color: var(--haze); }
+  .chip[aria-pressed="true"] { color: var(--void); background: var(--starlight); border-color: var(--starlight); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); gap: 2rem 1.75rem; }
+  .viz { display: flex; flex-direction: column; gap: .9rem; }
+  .viz[hidden] { display: none; }
+  .frame {
+    position: relative; aspect-ratio: 16 / 10; width: 100%; padding: 0; border: 1px solid var(--dust);
+    border-radius: 6px; overflow: hidden; background: var(--deep); cursor: zoom-in; display: block;
+    transition: border-color .2s;
+  }
+  .frame:hover { border-color: var(--nebula); }
+  .frame video, .frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .viz h3 { font: 400 1.4rem/1.25 var(--serif); margin: 0; }
+  .viz p { margin: 0; color: var(--haze); font-size: .98rem; }
+  .tags { color: var(--haze); font-size: .85rem; display: flex; flex-wrap: wrap; gap: .25rem .8rem; }
+  .tags span { opacity: .85; }
+  .viz .more { font-size: .92rem; }
+
+  .placeholder {
+    width: 100%; height: 100%; display: grid; place-items: center; text-align: center; padding: 1rem;
+    color: var(--haze); font-size: .9rem;
+    background:
+      radial-gradient(1px 1px at 20% 30%, #fff8, transparent),
+      radial-gradient(1px 1px at 70% 20%, #fff6, transparent),
+      radial-gradient(1.5px 1.5px at 55% 70%, #fff7, transparent),
+      radial-gradient(1px 1px at 85% 80%, #fff5, transparent),
+      radial-gradient(1px 1px at 10% 85%, #fff6, transparent),
+      radial-gradient(circle at 50% 50%, rgba(143,134,255,.18), transparent 65%),
+      var(--deep);
+  }
+  .placeholder code { color: var(--accent); font-size: .85rem; }
+
+  /* lightbox */
+  dialog {
+    border: 1px solid var(--dust); background: var(--deep); color: var(--starlight);
+    padding: 0; border-radius: 8px; width: min(64rem, 94vw); max-height: 92vh; overflow: auto;
+  }
+  dialog::backdrop { background: rgba(2,3,8,.85); backdrop-filter: blur(3px); }
+  .lb-media { background: #000; }
+  .lb-media video, .lb-media img { width: 100%; max-height: 66vh; object-fit: contain; display: block; }
+  .lb-media .placeholder { aspect-ratio: 16/9; height: auto; }
+  .lb-body { padding: 1.5rem 1.75rem 1.75rem; }
+  .lb-body h3 { font: 400 1.9rem/1.15 var(--serif); margin: 0 0 .5rem; }
+  .lb-body p { color: #c4c3d6; margin: 0 0 .75rem; max-width: 46rem; }
+  .lb-close {
+    position: absolute; top: .75rem; right: .75rem; z-index: 2; cursor: pointer;
+    background: rgba(4,5,11,.8); color: var(--starlight); border: 1px solid var(--dust);
+    border-radius: 999px; padding: .35rem .9rem; font: 500 .9rem var(--sans);
+  }
+  .lb-close:hover { border-color: var(--nebula); }
+
+
+  @media (max-width: 52rem) {
+    .hero { grid-template-columns: 1fr; gap: 2rem; }
+    .orrery { max-width: 18rem; order: -1; justify-self: start; }
+    .news dl { grid-template-columns: 1fr; gap: .1rem; }
+    .news dd { margin-bottom: .7rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+
+<body>
+<div id="bg" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="site">
+    <nav role="tablist" aria-label="Site sections" id="tabs"></nav>
+  </header>
+
+  <main>
+    <!-- ================= ABOUT ================= -->
+    <section role="tabpanel" id="panel-about" aria-labelledby="tab-about">
+      <div class="hero">
+        <div>
+          <h1 id="hero-name"></h1>
+          <p class="lede" id="hero-lede"></p>
+          <div class="prose" id="hero-bio"></div>
+          <div class="links" id="hero-links"></div>
+        </div>
+        <div class="orrery"><canvas id="orrery" aria-label="Animated orbital diagram" role="img"></canvas></div>
+      </div>
+      <div class="news" id="news-wrap">
+        <h2>Recent news</h2>
+        <dl id="news"></dl>
+      </div>
+    </section>
+
+    <!-- ================= PUBLICATIONS ================= -->
+    <section role="tabpanel" id="panel-publications" aria-labelledby="tab-publications" hidden>
+      <div class="panel-head">
+        <h2>Publications</h2>
+        <p id="pubs-intro"></p>
+      </div>
+      <div id="pubs"></div>
+    </section>
+
+    <!-- ================= VISUALIZATIONS ================= -->
+    <section role="tabpanel" id="panel-visualizations" aria-labelledby="tab-visualizations" hidden>
+      <div class="panel-head">
+        <h2>Visualizations</h2>
+        <p id="viz-intro"></p>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
+      <div class="grid" id="viz-grid"></div>
+    </section>
+  </main>
+</div>
+
+
+<dialog id="lightbox" aria-label="Visualization detail">
+  <button class="lb-close" id="lb-close" type="button">Close</button>
+  <div class="lb-media" id="lb-media"></div>
+  <div class="lb-body">
+    <h3 id="lb-title"></h3>
+    <div id="lb-text"></div>
+    <div class="pub-links" id="lb-links"></div>
+  </div>
+</dialog>
+
+<script>
+/* =====================================================================
+   EDIT THIS BLOCK – everything on the site is generated from it.
+   ===================================================================== */
+const SITE = {
+  name: "Stephen Canino",
+  heroName: "Stephen <em>Canino</em>",
+  lede: "I study the nature of dark matter using simulations and observations.",
+  bio: ["I’m a <strong>3rd year undergraduate student</strong> at UC San Diego.",
+        "My current research interests lie at the intersection of simulations, theory, and observation."],
+  /* Page background photo. Leave src empty for plain black.
+     dim: 0 (full brightness) to 1 (black). Raise it if text is hard to read. */
+  background: { src: ""},
+
+  /* Front-page picture. Leave src empty to keep the animated solar system.
+     Set src to your own GIF (type "image") or MP4/WebM (type "video"). */
+  heroMedia: { type: "image", src: "media/reduced_bitrate.gif", alt: "Dark matter simulation of the cosmic web in a 128 Mpc/h box" },
+  links: [
+    { label: "GitHub",     href: "https://github.com/vehxii" },
+    { label: "Email",      href: "mailto:scanino@ucsd.edu" }
+  ],
+  news: [
+    {date: "Sept 2026", text: "Presented my recent work with Ethan Nadler and Sandip Roy at GalFresca 2026 at UC Irvine!" }
+  ],
+
+  pubsIntro: "Papers are listed (newest first)",
+  /* Put your own name exactly as it appears in `authors` and it will be bolded: */
+  myName: "Stephen Canino",
+  publications: [
+    {
+      year: "TBD",
+      title: "Papers Coming Soon!!",
+      authors: "Stephen Canino, Ethan Nadler, Sandip Roy",
+      venue: "Monthly Notices of the Royal Astronomical Society, ApJ, something??",
+      blurb: "Machine learning the time evolution of the subhalo mass function in the Symphony suite of simulations",
+      links: []
+    },
+  ],
+
+  vizIntro: "Animations and figures, click any to enlarge.",
+  /* type: "video" (mp4/webm) or "image" (gif/png/jpg/webp).
+     Put files in a /media folder next to index.html.
+     Leave `src` empty to show a placeholder. `poster` is optional (video only). */
+  visualizations: [
+    {
+      title: "N-body Gravity Simulations, Particle-Mesh Simulations, Recent Figures/Plotsetc...",
+      type: "image", src: "", poster: "",
+      blurb: "Coming soon!",
+      tags: ["dark matter", "cosmology", "structure formation", "simulations"],
+      links: []
+    }
+  ]
+};
+
+/* =====================================================================
+   Everything below renders the site. You shouldn’t need to touch it.
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- tabs ---------- */
+const TABS = [
+  { id: "about", label: "About" },
+  { id: "publications", label: "Publications" },
+  { id: "visualizations", label: "Visualizations" }
+];
+
+function buildTabs() {
+  const nav = $("#tabs");
+  TABS.forEach(t => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.type = "button"; b.role = "tab";
+    b.id = "tab-" + t.id; b.textContent = t.label;
+    b.setAttribute("aria-controls", "panel-" + t.id);
+    b.addEventListener("click", () => select(t.id, true));
+    b.addEventListener("keydown", e => {
+      const i = TABS.findIndex(x => x.id === t.id);
+      let j = null;
+      if (e.key === "ArrowRight") j = (i + 1) % TABS.length;
+      if (e.key === "ArrowLeft")  j = (i - 1 + TABS.length) % TABS.length;
+      if (j !== null) { e.preventDefault(); select(TABS[j].id, true); $("#tab-" + TABS[j].id).focus(); }
+    });
+    nav.appendChild(b);
+  });
+}
+
+function select(id, pushHash) {
+  if (!TABS.some(t => t.id === id)) id = "about";
+  TABS.forEach(t => {
+    const on = t.id === id;
+    const tab = $("#tab-" + t.id);
+    tab.setAttribute("aria-selected", on);
+    tab.tabIndex = on ? 0 : -1;
+    $("#panel-" + t.id).hidden = !on;
+  });
+  if (pushHash && location.hash !== "#" + id) history.pushState(null, "", "#" + id);
+  document.title = (id === "about" ? SITE.name : TABS.find(t => t.id === id).label + " – " + SITE.name);
+  if (id === "visualizations") syncVideos();
+  window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+}
+window.addEventListener("hashchange", () => select(location.hash.slice(1), false));
+
+/* ---------- about ---------- */
+function buildAbout() {
+  $("#hero-name").innerHTML = SITE.heroName;
+  $("#hero-lede").textContent = SITE.lede;
+  $("#hero-bio").innerHTML = SITE.bio.map(p => `<p>${p}</p>`).join("");
+  const hm = SITE.heroMedia;
+  if (hm && hm.src) {
+    const box = $(".orrery"); box.classList.add("has-media"); box.innerHTML = "";
+    let el;
+    if (hm.type === "video") {
+      el = document.createElement("video");
+      el.src = hm.src; el.muted = true; el.loop = true; el.playsInline = true; el.autoplay = !reduceMotion;
+      el.setAttribute("aria-label", hm.alt || "");
+    } else {
+      el = document.createElement("img"); el.src = hm.src; el.alt = hm.alt || "";
+    }
+    box.appendChild(el);
+  }
+  $("#hero-links").innerHTML = SITE.links.map(l => {
+    const ext = /^https?:/.test(l.href);
+    return `<a class="pill" href="${esc(l.href)}"${ext ? ' target="_blank" rel="noopener"' : ""}>${esc(l.label)}</a>`;
+  }).join("");
+  if (SITE.news.length) {
+    $("#news").innerHTML = SITE.news.map(n => `<dt>${esc(n.date)}</dt><dd>${esc(n.text)}</dd>`).join("");
+  } else { $("#news-wrap").remove(); }
+}
+
+/* ---------- publications ---------- */
+function linkList(links) {
+  return (links || []).map(l => {
+    const ext = /^https?:/.test(l.href);
+    return `<a href="${esc(l.href)}"${ext ? ' target="_blank" rel="noopener"' : ""}>${esc(l.label)}</a>`;
+  }).join("");
+}
+
+function buildPubs() {
+  $("#pubs-intro").textContent = SITE.pubsIntro;
+  const byYear = {};
+  SITE.publications.forEach(p => (byYear[p.year] ||= []).push(p));
+  const mine = SITE.myName ? new RegExp(esc(SITE.myName).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g") : null;
+  $("#pubs").innerHTML = Object.keys(byYear).sort((a, b) => { const n = k => isNaN(+k) ? Infinity : +k; return (n(b) > n(a)) - (n(b) < n(a)); }).map(y => `
+    <h3 class="year">${y}</h3>
+    ${byYear[y].map(p => {
+      const first = p.links && p.links[0];
+      const title = first ? `<a href="${esc(first.href)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title);
+      const authors = mine ? esc(p.authors).replace(mine, "<b>$&</b>") : esc(p.authors);
+      return `<article class="pub">
+        <h3>${title}</h3>
+        <div class="authors">${authors}</div>
+        <div class="venue">${esc(p.venue)}</div>
+        ${p.blurb ? `<p class="blurb">${esc(p.blurb)}</p>` : ""}
+        <div class="pub-links">${linkList(p.links)}</div>
+      </article>`;
+    }).join("")}
+  `).join("");
+}
+
+/* ---------- visualizations ---------- */
+function mediaEl(v, large) {
+  if (!v.src) {
+    const d = document.createElement("div");
+    d.className = "placeholder";
+    d.innerHTML = `<span>Media goes here.<br>Set <code>src</code> to a ${v.type === "video" ? ".mp4" : "GIF or image"} in <code>/media</code></span>`;
+    return d;
+  }
+  if (v.type === "video") {
+    const el = document.createElement("video");
+    el.src = v.src; el.muted = true; el.loop = true; el.playsInline = true;
+    el.preload = large ? "auto" : "metadata";
+    if (v.poster) el.poster = v.poster;
+    el.setAttribute("aria-label", v.title);
+    if (large) { el.controls = true; el.autoplay = true; }
+    else { el.dataset.autoplay = "1"; }
+    return el;
+  }
+  const img = document.createElement("img");
+  img.src = v.src; img.alt = v.title; img.loading = large ? "eager" : "lazy";
+  return img;
+}
+
+let activeTag = "All";
+function buildViz() {
+  $("#viz-intro").textContent = SITE.vizIntro;
+  const tags = ["All", ...new Set(SITE.visualizations.flatMap(v => v.tags || []))];
+  const f = $("#filters");
+  if (tags.length > 2) {
+    tags.forEach(t => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.textContent = t;
+      b.setAttribute("aria-pressed", t === activeTag);
+      b.addEventListener("click", () => {
+        activeTag = t;
+        f.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+        document.querySelectorAll(".viz").forEach(card => {
+          const vt = card.dataset.tags.split("|");
+          card.hidden = !(t === "All" || vt.includes(t));
+        });
+        syncVideos();
+      });
+      f.appendChild(b);
+    });
+  } else { f.remove(); }
+
+  const grid = $("#viz-grid");
+  SITE.visualizations.forEach((v, i) => {
+    const card = document.createElement("article");
+    card.className = "viz"; card.dataset.tags = (v.tags || []).join("|");
+    const frame = document.createElement("button");
+    frame.type = "button"; frame.className = "frame";
+    frame.setAttribute("aria-label", "Enlarge: " + v.title);
+    frame.appendChild(mediaEl(v, false));
+    frame.addEventListener("click", () => openLightbox(i));
+    card.appendChild(frame);
+    card.insertAdjacentHTML("beforeend", `
+      <h3>${esc(v.title)}</h3>
+      <p>${esc(v.blurb)}</p>
+      ${v.tags && v.tags.length ? `<div class="tags">${v.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
+      ${v.links && v.links.length ? `<div class="pub-links more">${linkList(v.links)}</div>` : ""}
+    `);
+    grid.appendChild(card);
+  });
+}
+
+/* play videos only while they’re on screen and the tab is visible */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting && !reduceMotion) v.play().catch(() => {});
+    else v.pause();
+  });
+}, { threshold: .25 });
+function syncVideos() {
+  document.querySelectorAll("video[data-autoplay]").forEach(v => { io.unobserve(v); io.observe(v); });
+}
+
+/* ---------- lightbox ---------- */
+const dlg = $("#lightbox");
+function openLightbox(i) {
+  const v = SITE.visualizations[i];
+  const m = $("#lb-media"); m.innerHTML = ""; m.appendChild(mediaEl(v, true));
+  $("#lb-title").textContent = v.title;
+  $("#lb-text").innerHTML = `<p>${esc(v.blurb)}</p>`;
+  $("#lb-links").innerHTML = linkList(v.links);
+  dlg.showModal();
+}
+function closeLightbox() { dlg.close(); }
+dlg.addEventListener("close", () => { $("#lb-media").innerHTML = ""; });
+$("#lb-close").addEventListener("click", closeLightbox);
+dlg.addEventListener("click", e => { if (e.target === dlg) closeLightbox(); });
+
+/* ---------- orrery in the hero ---------- */
+(function orrery() {
+  if (SITE.heroMedia && SITE.heroMedia.src) return;
+  const c = $("#orrery"), ctx = c.getContext("2d");
+  const bodies = [
+    { a: .20, e: .05, T: 6,   r: 3,   col: "#cfd3ff", ph: 0.3 },
+    { a: .33, e: .10, T: 14,  r: 4.5, col: "#8f86ff", ph: 2.1 },
+    { a: .47, e: .04, T: 27,  r: 5,   col: "#6fc2ff", ph: 4.0 },
+    { a: .62, e: .12, T: 52,  r: 3.5, col: "#f0b36b", ph: 1.0 },
+    { a: .80, e: .55, T: 90,  r: 2.5, col: "#ffffff", ph: 5.2, comet: true }  /* eccentric comet */
+  ];
+  let size, dpr;
+  function resize() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    const r = c.getBoundingClientRect();
+    size = c.width = c.height = Math.max(1, Math.round(r.width * dpr));
+  }
+  function pos(b, t) {
+    /* Kepler's equation, solved by a few Newton steps, so the comet really speeds up near the star */
+    const M = (t / b.T) * 6.283 + b.ph;
+    let E = M;
+    for (let i = 0; i < 5; i++) E -= (E - b.e * Math.sin(E) - M) / (1 - b.e * Math.cos(E));
+    const x = b.a * (Math.cos(E) - b.e), y = b.a * Math.sqrt(1 - b.e * b.e) * Math.sin(E);
+    const rot = b.ph * 1.7, cs = Math.cos(rot), sn = Math.sin(rot);
+    return [x * cs - y * sn, x * sn + y * cs];
+  }
+  function draw(ms) {
+    const t = reduceMotion ? 8 : ms / 1000;
+    const R = size / 2;
+    ctx.clearRect(0, 0, size, size);
+    ctx.save(); ctx.translate(R, R);
+
+    /* orbit paths */
+    ctx.lineWidth = 1 * dpr;
+    for (const b of bodies) {
+      ctx.strokeStyle = "rgba(154,157,184,.22)";
+      ctx.beginPath();
+      for (let k = 0; k <= 120; k++) {
+        const M = (k / 120) * 6.283;
+        const x = b.a * (Math.cos(M) - b.e), y = b.a * Math.sqrt(1 - b.e * b.e) * Math.sin(M);
+        const rot = b.ph * 1.7, cs = Math.cos(rot), sn = Math.sin(rot);
+        const X = (x * cs - y * sn) * R * .95, Y = (x * sn + y * cs) * R * .95;
+        k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+      }
+      ctx.stroke();
+    }
+
+    /* star */
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * .16);
+    g.addColorStop(0, "rgba(255,236,200,1)");
+    g.addColorStop(.25, "rgba(240,179,107,.8)");
+    g.addColorStop(1, "rgba(240,179,107,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * .16, 0, 6.283); ctx.fill();
+    ctx.fillStyle = "#fff4dc"; ctx.beginPath(); ctx.arc(0, 0, 4 * dpr, 0, 6.283); ctx.fill();
+
+    /* bodies, with short trails */
+    for (const b of bodies) {
+      for (let k = 18; k >= 0; k--) {
+        const [x, y] = pos(b, t - k * (b.T / 700));
+        ctx.globalAlpha = (1 - k / 18) * (b.comet ? .55 : .35);
+        ctx.fillStyle = b.col;
+        ctx.beginPath(); ctx.arc(x * R * .95, y * R * .95, b.r * dpr * (1 - k / 30), 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      const [x, y] = pos(b, t);
+      ctx.fillStyle = b.col;
+      ctx.beginPath(); ctx.arc(x * R * .95, y * R * .95, b.r * dpr, 0, 6.283); ctx.fill();
+    }
+    ctx.restore();
+    if (!reduceMotion) requestAnimationFrame(draw);
+  }
+  addEventListener("resize", () => { resize(); if (reduceMotion) draw(0); });
+  resize(); requestAnimationFrame(draw);
+})();
+
+/* ---------- background photo ---------- */
+(function background() {
+  const b = SITE.background;
+  if (!b || !b.src) return;
+  const el = $("#bg");
+  el.style.backgroundImage = `url("${b.src}")`;
+  el.style.setProperty("--dim", b.dim ?? .45);
+  el.classList.add("on");
+})();
+
+/* ---------- boot ---------- */
+buildTabs(); buildAbout(); buildPubs(); buildViz();
+select(location.hash.slice(1) || "about", false);
+</script>
+</body>
+</html>
