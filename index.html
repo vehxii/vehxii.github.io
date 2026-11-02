@@ -359,9 +359,9 @@ function buildAbout() {
     if (hm.type === "video") {
       el = document.createElement("video");
       el.src = hm.src;
-      el.muted = true;
+      el.muted = true; el.setAttribute("muted", "");
       el.loop = true;
-      el.playsInline = true;
+      el.playsInline = true; el.setAttribute("playsinline", "");
       el.autoplay = !reduceMotion;
       el.setAttribute("aria-label", hm.alt || "");
     } else {
