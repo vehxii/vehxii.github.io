@@ -78,9 +78,21 @@
 
   .orrery { width: 100%; aspect-ratio: 1; max-width: 26rem; justify-self: center; }
   .orrery canvas { width: 100%; height: 100%; display: block; }
-  .orrery.has-media { aspect-ratio: auto; max-width: none; }
-  .orrery.has-media img, .orrery.has-media video { width: 100%; height: auto; display: block; border-radius: 6px; border: 1px solid var(--dust); }
-
+  .orrery.has-media {
+    aspect-ratio: 1 / 1;
+    max-width: none;
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px solid var(--dust);
+  }
+  .orrery.has-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* fills the square, trimming the sides */
+    border: 0;
+    border-radius: 0;
+  }
+  
   .links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.75rem; }
   .pill {
     display: inline-block; padding: .45rem .95rem; border: 1px solid var(--dust); border-radius: 999px;
