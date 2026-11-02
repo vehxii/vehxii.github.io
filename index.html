@@ -362,13 +362,13 @@ function buildAbout() {
       el.muted = true; el.setAttribute("muted", "");
       el.loop = true;
       el.playsInline = true; el.setAttribute("playsinline", "");
-      el.autoplay = !reduceMotion;
+      el.autoplay = true;
       el.setAttribute("aria-label", hm.alt || "");
     } else {
       el = document.createElement("img"); el.src = hm.src; el.alt = hm.alt || "";
     }
     box.appendChild(el);
-    if (el.tagName === "VIDEO" && !reduceMotion) el.play().catch(() => {});
+    if (el.tagName === "VIDEO") el.play().catch(() => {});
   }
   $("#hero-links").innerHTML = SITE.links.map(l => {
     const ext = /^https?:/.test(l.href);
