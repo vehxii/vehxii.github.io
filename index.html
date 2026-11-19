@@ -86,10 +86,10 @@
      Change 38rem to make it bigger or smaller. */
   .orrery.has-media {
     aspect-ratio: auto; max-width: none; justify-self: auto;
-    width: min(100%, 42rem); margin: 3rem auto 0;
+    width: min(100%, 38rem, 75vh); margin: 3rem auto 0;
   }
   .orrery.has-media img, .orrery.has-media video {
-    width: 100%; height: auto; max-height: 80vh; object-fit: cover; display: block;
+    width: 100%; height: auto; display: block;
     border-radius: 8px; border: 1px solid var(--dust);
   }
   html, body { overflow-x: clip; }
@@ -274,7 +274,7 @@ const SITE = {
 
   /* Front-page picture. Leave src empty to keep the animated solar system.
      Set src to your own GIF (type "image") or MP4/WebM (type "video"). */
-  heroMedia: { type: "video", src: "cosmic_web_500Mpc_8M_compressed.mp4", alt: "Dark matter simulation of the cosmic web: 8 million particles in a 500 Mpc/h box" },
+  heroMedia: { type: "video", src: "cosmic_web_shortened.mp4", alt: "Dark matter simulation of the cosmic web in a 128 Mpc/h box" },
   links: [
     { label: "GitHub",     href: "https://github.com/vehxii" },
     { label: "Email",      href: "mailto:scanino@ucsd.edu" }
