@@ -78,7 +78,8 @@
 
   .orrery { width: 100%; aspect-ratio: 1; max-width: 26rem; justify-self: center; }
   .orrery canvas { width: 100%; height: 100%; display: block; }
-  .orrery.has-media { aspect-ratio: auto; max-width: 30rem; }
+  .orrery.has-media { aspect-ratio: auto; max-width: none; width: 100%; }
+  .hero:has(.orrery.has-media) { grid-template-columns: .9fr 1.1fr; gap: 2.5rem; }
   .orrery.has-media img, .orrery.has-media video { width: 100%; height: auto; display: block; border-radius: 6px; border: 1px solid var(--dust); }
 
   .links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.75rem; }
@@ -176,6 +177,8 @@
   @media (max-width: 52rem) {
     .hero { grid-template-columns: 1fr; gap: 2rem; }
     .orrery { max-width: 18rem; order: -1; justify-self: start; }
+    .orrery.has-media { max-width: 100%; }
+    .hero:has(.orrery.has-media) { grid-template-columns: 1fr; }
     .news dl { grid-template-columns: 1fr; gap: .1rem; }
     .news dd { margin-bottom: .7rem; }
   }
@@ -358,12 +361,17 @@ function buildAbout() {
     let el;
     if (hm.type === "video") {
       el = document.createElement("video");
-      el.src = hm.src; el.muted = true; el.loop = true; el.playsInline = true; el.autoplay = !reduceMotion;
+      el.muted = true; el.defaultMuted = true; el.loop = true; el.playsInline = true;
+      ["muted", "loop", "playsinline", "autoplay"].forEach(a => el.setAttribute(a, ""));
+      el.preload = "auto";
+      el.src = hm.src;
       el.setAttribute("aria-label", hm.alt || "");
+      el.addEventListener("canplay", () => el.play().catch(() => {}), { once: true });
     } else {
       el = document.createElement("img"); el.src = hm.src; el.alt = hm.alt || "";
     }
     box.appendChild(el);
+    if (el.tagName === "VIDEO") el.play().catch(() => {});
   }
   $("#hero-links").innerHTML = SITE.links.map(l => {
     const ext = /^https?:/.test(l.href);
