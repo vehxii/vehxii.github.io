@@ -81,12 +81,16 @@
   /* When heroMedia is set, the text gets the full row and the media sits
      edge to edge across the screen, between the links and "Recent news". */
   .hero.solo { grid-template-columns: 1fr; }
+  /* Video size: the same medium size on every screen.
+     38rem (about 600px) wide, but never wider than the page on a phone.
+     Change 38rem to make it bigger or smaller. */
   .orrery.has-media {
     aspect-ratio: auto; max-width: none; justify-self: auto;
-    width: 75vw; margin: 3rem 0 0 calc(50% - 37.5vw);
+    width: min(100%, 38rem); margin: 3rem auto 0;
   }
   .orrery.has-media img, .orrery.has-media video {
-    width: 100%; height: auto; max-height: 100vh; object-fit: cover; display: block;
+    width: 100%; height: auto; max-height: 80vh; object-fit: cover; display: block;
+    border-radius: 8px; border: 1px solid var(--dust);
   }
   html, body { overflow-x: clip; }
 
@@ -185,7 +189,7 @@
   @media (max-width: 52rem) {
     .hero { grid-template-columns: 1fr; gap: 2rem; }
     .orrery { max-width: 18rem; order: -1; justify-self: start; }
-    .orrery.has-media { max-width: none; margin-top: 2rem; }
+    .orrery.has-media { max-width: none; margin: 2rem auto 0; }
     .news dl { grid-template-columns: 1fr; gap: .1rem; }
     .news dd { margin-bottom: .7rem; }
   }
